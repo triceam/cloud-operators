@@ -18,9 +18,11 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/ibm/cloud-operators/pkg/apis"
 	"github.com/ibm/cloud-operators/pkg/controller"
+	"github.com/ibm/cloud-operators/pkg/webhook"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 	_ "k8s.io/client-go/plugin/pkg/client/auth/oidc"
 	"sigs.k8s.io/controller-runtime/pkg/client/config"
@@ -53,6 +55,14 @@ func main() {
 	// Setup all Controllers
 	if err := controller.AddToManager(mgr); err != nil {
 		log.Fatal(err)
+	}
+
+	if os.Getenv("ADMISSION_CONTROL") == "true" {
+		log.Printf("Starting the webwook.")
+		if err := webhook.AddToManager(mgr); err != nil {
+			log.Fatal(err)
+			os.Exit(1)
+		}
 	}
 
 	log.Printf("Starting the Cmd.")
