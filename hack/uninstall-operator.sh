@@ -29,3 +29,7 @@ kubectl delete ns -l app.kubernetes.io/name=ibmcloud-operator
 
 # delete secrets/config maps left
 kubectl delete secrets,configmaps -n default -l app.kubernetes.io/name=ibmcloud-operator
+
+# delete admission control webhook configurations
+kubectl delete validatingwebhookconfiguration ibmcloud-validating
+kubectl delete mutatingwebhookconfiguration ibmcloud-mutating

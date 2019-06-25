@@ -1,0 +1,15 @@
+apiVersion: v1
+data:
+  labels: '[{"kind":"EsIndex","group":"ibmcloud.ibm.com","version":"v1alpha1","labels":["ibmcloud.ibm.com/instance","ibmcloud.ibm.com/name"]}]'
+kind: ConfigMap
+metadata:
+  name: ibmcloud-labels
+  namespace: ibmcloud-operators
+---
+apiVersion: v1
+data:
+  immutables: '[{"kind":"EsIndex","group":"ibmcloud.ibm.com","version":"v1alpha1","immutables":["Sepc.Test","Spec.BindingFrom.Name","Spec.IndexName","Spec.NumberOfShards","Spec.NumberOfReplicas"]},{"kind":"Service","group":"ibmcloud.ibm.com","version":"v1alpha1","immutables":["Spec.Test","Spec.Plan","Spec.ServiceClass"]},{"kind":"Topic","group":"ibmcloud.ibm.com","version":"v1alpha1","immutables":["Spec.TopicName","Spec.NumPartitions","Spec.ReplicationFactor"]}]'
+kind: ConfigMap
+metadata:
+  name: ibmcloud-immutables
+  namespace: ibmcloud-operators

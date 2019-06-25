@@ -1,0 +1,119 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ibmcloud-operator-service
+  namespace: ibmcloud-operators
+  labels:
+    app: ibmcloud-operator
+    app.kubernetes.io/name: ibmcloud-operators
+spec:
+  selector:
+    app: ibmcloud-operator
+  ports:
+  - port: 443
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    deployment.kubernetes.io/revision: '1'
+  labels:
+    app.kubernetes.io/name: ibmcloud-operators
+    control-plane: controller-manager
+    controller-tools.k8s.io: "1.0"
+  name: ibmcloud-operator
+  namespace: ibmcloud-operators
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ibmcloud-operator
+      control-plane: controller-manager
+      controller-tools.k8s.io: "1.0"
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: ibmcloud-operator
+        control-plane: controller-manager
+        controller-tools.k8s.io: "1.0"
+    spec:
+      containers:
+      - args:
+        - -logtostderr=true
+        - -v=5
+        command:
+        - ./manager
+        image: registry.ng.bluemix.net/seedtest/cloud-operators:admission
+        imagePullPolicy: Always
+        name: ibmcloud-controllers
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: SECRET_NAME
+          value: ibmcloud-admissionwebhook-certs
+        - name: WEBHOOK_SERVICE_NAME
+          value: ibmcloud-operator-service
+        - name: CERT_DIR
+          value: /tmp/cert
+        # enable admission control
+        - name: ADMISSION_CONTROL
+          value: "true"            
+        # enable label validation in admission control
+        - name: ADMISSION_CONTROL_LABELS
+          value: "false"            
+        # enable immutable validation in admission control
+        - name: ADMISSION_CONTROL_IMMUTABLES
+          value: "true"
+        # enable dependency check in admission control
+        - name: ADMISSION_CONTROL_DEPENDENCIES
+          value: "false"            
+        resources:
+          limits:
+            cpu: 100m
+            memory: 300Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 443
+          name: webhook-server
+          protocol: TCP
+        volumeMounts:
+        - name: cert
+          mountPath: /tmp/cert
+          readOnly: true
+        - name: config-labels-volume
+          mountPath: /etc/config/labels
+          readOnly: true
+        - name: config-immutables-volume
+          mountPath: /etc/config/immutables
+          readOnly: true
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - name: cert
+        secret:
+          defaultMode: 420
+          secretName: ibmcloud-admissionwebhook-certs
+      - name: config-labels-volume
+        configMap:
+          name: ibmcloud-labels
+      - name: config-immutables-volume
+        configMap:
+          name: ibmcloud-immutables
+      imagePullSecrets:
+#      - name: seed-seed-registry
+      - name: bluemix-default-secret
+      serviceAccountName: ibmcloud-operator
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ibmcloud-admissionwebhook-certs
+  namespace: ibmcloud-operators
+  labels:
+    app: ibmcloud-operator
+    app.kubernetes.io/name: ibmcloud-operators
