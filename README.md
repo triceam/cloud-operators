@@ -37,14 +37,14 @@ ibmcloud target --cf
 To install the operator, run the following script:
 
 ```
-curl -sL https://raw.githubusercontent.com/IBM/cloud-operators/master/hack/install-operator.sh | bash 
+curl -sL https://raw.githubusercontent.com/IBM/cloud-operators/admission/hack/install-operator.sh | bash 
 ```
 This will install the latest version of the operator.
 
 ## Removing the operator
 
 ```
-curl -sL https://raw.githubusercontent.com/IBM/cloud-operators/master/hack/uninstall-operator.sh | bash 
+curl -sL https://raw.githubusercontent.com/IBM/cloud-operators/admission/hack/uninstall-operator.sh | bash 
 ```
 
 ## Using the Operator
