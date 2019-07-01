@@ -17,7 +17,7 @@
 
 set -e
 
-RELEASE="admission/"
+RELEASE="latest/"
 
 # check if running piped from curl
 if [ -z ${BASH_SOURCE} ]; then
