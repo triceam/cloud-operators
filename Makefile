@@ -43,8 +43,11 @@ deploy: manifests
 # Generate manifests e.g. CRD, RBAC etc.
 .PHONY: manifests
 manifests:
-	go run vendor/sigs.k8s.io/controller-tools/cmd/controller-gen/main.go all
-	hack/crd-fix.sh
+	go run -tags generate sigs.k8s.io/controller-tools/cmd/controller-gen \
+		crd:trivialVersions=true \
+		object:headerFile=hack/boilerplate.go.txt \
+		paths=./pkg/apis/...
+	#hack/crd-fix.sh
 
 .PHONY: fmt
 fmt:
