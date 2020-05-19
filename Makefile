@@ -45,9 +45,7 @@ deploy: manifests
 manifests:
 	go run -tags generate sigs.k8s.io/controller-tools/cmd/controller-gen \
 		crd:trivialVersions=true \
-		object:headerFile=hack/boilerplate.go.txt \
 		paths=./pkg/apis/...
-	#hack/crd-fix.sh
 
 .PHONY: fmt
 fmt:
